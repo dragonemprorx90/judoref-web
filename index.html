@@ -1,1 +1,537 @@
-<!doctype html><meta charset=utf-8><title>JudoRef</title><p>JudoRef web — coming up.</p>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>JudoRef</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1D3F73">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%231D3F73%27/%3E%3Ctext x=%2732%27 y=%2744%27 font-size=%2734%27 text-anchor=%27middle%27%3E🥋%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Tajawal:wght@500;700;800&display=swap">
+<style>
+/* Layout: a phone-sized app frame centred on desktop, edge-to-edge on phones. One stack, one accent. */
+:root{
+  --bg:#EEF1F6; --surface:#FFFFFF; --surface-2:#F5F7FB; --line:#E2E6EE;
+  --ink:#101828; --ink-2:#475467; --ink-3:#8A94A6;
+  --navy:#1D3F73; --navy-deep:#122B52; --navy-soft:#E4ECF9; --on-navy:#FFFFFF;
+  --good:#1E7B4D; --good-soft:#E1F3E8; --warn:#A86A12; --warn-soft:#FBEFD6; --bad:#B8392A; --bad-soft:#FAE3DF;
+  --font:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif; --font-ar:"Tajawal","Manrope",system-ui,sans-serif;
+  --r:16px; --shadow:0 1px 2px rgba(16,24,40,.06),0 8px 24px rgba(16,24,40,.06);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0B1220; --surface:#141C2B; --surface-2:#1B2436; --line:#27324A;
+  --ink:#EEF2F8; --ink-2:#B6C0D2; --ink-3:#7E8AA0;
+  --navy:#3D6DB8; --navy-deep:#1E3A66; --navy-soft:#1E2E4A; --on-navy:#FFFFFF;
+  --good:#5BC98C; --good-soft:#153826; --warn:#E0A94A; --warn-soft:#3B2C10; --bad:#F08A7C; --bad-soft:#3F1F1B;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0B1220; --surface:#141C2B; --surface-2:#1B2436; --line:#27324A;
+  --ink:#EEF2F8; --ink-2:#B6C0D2; --ink-3:#7E8AA0;
+  --navy:#3D6DB8; --navy-deep:#1E3A66; --navy-soft:#1E2E4A; --on-navy:#FFFFFF;
+  --good:#5BC98C; --good-soft:#153826; --warn:#E0A94A; --warn-soft:#3B2C10; --bad:#F08A7C; --bad-soft:#3F1F1B;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark }
+
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+input,textarea,select{font:inherit;color:var(--ink)}
+
+.stage{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;gap:14px}
+.stage-note{font-size:13px;color:var(--ink-3);text-align:center;max-width:420px}
+.phone{width:100%;max-width:400px;height:min(820px,calc(100vh - 100px));min-height:640px;background:var(--surface);border-radius:32px;box-shadow:var(--shadow),0 0 0 8px var(--navy-deep);overflow:hidden;position:relative;display:flex;flex-direction:column}
+@media (max-width:480px){ .stage{padding:0} .stage-note{display:none} .phone{max-width:none;height:100%;min-height:100%;border-radius:0;box-shadow:none} }
+.app{flex:1;display:flex;flex-direction:column;min-height:0}
+.app[dir="rtl"]{font-family:var(--font-ar)}
+
+/* top bar */
+.bar{display:flex;align-items:center;gap:8px;padding:14px 16px 10px;min-height:56px}
+.bar h1{font-size:20px;font-weight:800;margin:0;flex:1;letter-spacing:-.01em;text-wrap:balance}
+.bar .icon-btn{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--ink-2)}
+.bar .icon-btn:hover{background:var(--surface-2)}
+.bar .sub{font-size:13px;color:var(--ink-3)}
+.bar .title-wrap{flex:1;min-width:0}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 16px 24px;display:flex;flex-direction:column;gap:14px}
+
+/* nav */
+.nav{display:flex;border-top:1px solid var(--line);background:var(--surface);padding:6px 8px 10px}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border-radius:12px;font-size:11.5px;font-weight:700;color:var(--ink-3)}
+.nav button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav button.on{color:var(--navy)} .nav button.on svg{stroke-width:2.2}
+.nav button.on span.pill{background:var(--navy-soft);border-radius:999px;padding:2px 14px}
+
+/* surfaces */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px}
+.hero{background:linear-gradient(150deg,var(--navy) 0%,var(--navy-deep) 100%);color:var(--on-navy);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:auto -40px -60px auto;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06)}
+.hero .eyebrow{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.8;font-weight:700}
+.hero .big{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.15;text-wrap:balance}
+.hero .time{font-size:17px;font-weight:600;opacity:.95}
+.hero .meta{font-size:13.5px;opacity:.8;margin-top:6px}
+.hero .chip{position:absolute;top:16px;inset-inline-end:16px}
+.eyebrow{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:800}
+h2{font-size:17px;font-weight:800;margin:0;letter-spacing:-.01em}
+.muted{color:var(--ink-2);font-size:13.5px}
+.tiny{color:var(--ink-3);font-size:12.5px}
+.notice{background:var(--warn-soft);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);border-radius:14px;padding:12px 14px;font-weight:700;font-size:14px;display:flex;gap:10px;align-items:flex-start}
+
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;border-radius:14px;font-weight:800;font-size:15px;padding:0 16px;transition:transform .06s ease,background .15s}
+.btn:active{transform:scale(.985)}
+.btn.primary{background:var(--navy);color:var(--on-navy)}
+.btn.tonal{background:var(--navy-soft);color:var(--navy)}
+.btn.ghost{background:var(--surface-2);color:var(--ink-2)}
+.btn.danger{background:var(--bad-soft);color:var(--bad)}
+.btn.sm{min-height:42px;font-size:14px;border-radius:12px}
+.btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.row-btns{display:flex;gap:8px}
+.fab{position:absolute;inset-inline-end:16px;bottom:82px;width:56px;height:56px;border-radius:18px;background:var(--navy);color:#fff;display:grid;place-items:center;box-shadow:0 10px 24px rgba(29,63,115,.35);font-size:30px;font-weight:600;line-height:1}
+
+/* chips & lists */
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:800;white-space:nowrap}
+.chip.up{background:var(--navy-soft);color:var(--navy)} .chip.done{background:var(--good-soft);color:var(--good)}
+.chip.cancel{background:var(--bad-soft);color:var(--bad)} .chip.past{background:var(--warn-soft);color:var(--warn)} .chip.none{background:var(--surface-2);color:var(--ink-3)}
+.hero .chip.up{background:rgba(255,255,255,.18);color:#fff}
+.list{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);text-align:start;width:100%}
+.item:last-child{border-bottom:0} .item:hover{background:var(--surface-2)}
+.item .body{flex:1;min-width:0}
+.item .t{font-weight:800;font-size:15px} .item .s{font-size:13px;color:var(--ink-2);margin-top:2px}
+.item .chev{color:var(--ink-3)}
+.avatar{width:42px;height:42px;border-radius:14px;background:var(--navy-soft);color:var(--navy);display:grid;place-items:center;font-weight:800;font-size:17px;flex:none}
+.bar-track{height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden;margin-top:8px}
+.bar-fill{height:100%;background:var(--good);border-radius:999px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--surface-2);border-radius:14px;padding:12px 10px;text-align:center}
+.stat b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat span{font-size:11.5px;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{display:flex;gap:12px;align-items:center;font-weight:600}
+.step i{width:26px;height:26px;border-radius:50%;background:var(--navy-soft);color:var(--navy);display:grid;place-items:center;font-style:normal;font-size:13px;font-weight:800;flex:none}
+.step.done i{background:var(--good-soft);color:var(--good)}
+
+/* forms */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12.5px;font-weight:800;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}
+.input{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-height:48px;font-size:15px}
+textarea.input{min-height:120px;resize:vertical;line-height:1.5}
+.seg{display:flex;gap:6px;background:var(--surface-2);padding:4px;border-radius:14px}
+.seg button{flex:1;min-height:40px;border-radius:10px;font-weight:800;font-size:13.5px;color:var(--ink-2)}
+.seg button.on{background:var(--surface);color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.part{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.part:last-child{border-bottom:0}
+.part .name{flex:1;font-weight:700}
+.stepper{display:flex;align-items:center;gap:2px;background:var(--surface-2);border-radius:12px;padding:3px}
+.stepper button{width:38px;height:36px;border-radius:9px;font-size:20px;font-weight:700;color:var(--navy)}
+.stepper button:hover{background:var(--surface)}
+.stepper b{width:52px;text-align:center;font-variant-numeric:tabular-nums}
+.part .x{color:var(--ink-3);width:32px;height:32px;display:grid;place-items:center;border-radius:8px}
+.att-row{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-bottom:1px solid var(--line)}
+.att-row:last-child{border-bottom:0}
+.att-row .n{font-weight:800;font-size:15px}
+.att-row .seg button.on.p{background:var(--good);color:#fff} .att-row .seg button.on.a{background:var(--bad);color:#fff} .att-row .seg button.on.e{background:var(--warn);color:#fff}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+.switch{width:46px;height:28px;border-radius:999px;background:var(--line);position:relative;flex:none;transition:background .15s}
+.switch::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.switch.on{background:var(--good)} .switch.on::after{transform:translateX(18px)} [dir="rtl"] .switch.on::after{transform:translateX(-18px)}
+
+/* sheet / toast */
+.sheet-wrap{position:absolute;inset:0;background:rgba(10,16,30,.45);display:flex;align-items:flex-end;z-index:20}
+.sheet{background:var(--surface);width:100%;border-radius:22px 22px 0 0;padding:14px 16px 20px;display:flex;flex-direction:column;gap:10px;animation:up .18s ease-out}
+.sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 6px}
+.sheet h3{margin:0;font-size:17px;font-weight:800}
+@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+.toast{position:absolute;left:16px;right:16px;bottom:90px;background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px;z-index:30;text-align:center;animation:up .15s ease-out}
+@media (prefers-reduced-motion:reduce){.sheet,.toast{animation:none}}
+.wa{background:#0b141a;color:#e9edef;border-radius:14px;padding:14px;font-size:13.5px;white-space:pre-wrap;line-height:1.5;border:1px solid #1f2c34}
+.wa .bubble{background:#005c4b;border-radius:10px;padding:8px 10px;margin-top:8px;white-space:pre-wrap}
+.pill-hint{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3);font-weight:700}
+.sent-list{display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:600}
+.sent-list .none{color:var(--ink-3);font-weight:600}
+.wa-st{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:800;border-radius:8px;padding:2px 8px}
+.wa-st.ok{background:var(--good-soft);color:var(--good)} .wa-st.no{background:var(--warn-soft);color:var(--warn)} .wa-st.warn{background:var(--bad-soft);color:var(--bad)}
+.hero .wa-st.warn{background:rgba(255,140,120,.28);color:#FFD9D2}
+.hero .wa-st.ok{background:rgba(255,255,255,.16);color:#fff} .hero .wa-st.no{background:rgba(255,205,120,.25);color:#FFE3A8}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="phone"><div class="app" id="app"></div></div>
+  <div class="stage-note">JudoRef web · same class as the phone app · Settings → Online sync to enter your class code</div>
+</div>
+
+<script>
+/* ---------- i18n ---------- */
+const T = {
+en:{home:"Home",classes:"Classes",referees:"Referees",settings:"Settings",next:"Next training",none:"No training scheduled",
+ schedule:"Schedule training",sendRem:"Send reminder",takeAtt:"Take attendance",editAtt:"Edit attendance",today:"Today",
+ hintDay:d=>`Next training day is ${d}. Schedule it now.`,hintNone:"Schedule the next training to see it here.",
+ cancelledNext:d=>`${d}'s training was cancelled.`,restore:d=>`Restore ${d}'s training`,breakOn:"Break mode is on. Turn it off in Settings when training resumes.",
+ warnAtt:t=>`Attendance not marked for the ${t} training.`,warnGap:"Tomorrow is a training day but nothing is scheduled.",
+ thisMonth:"This month",held:"Sessions",refs:"Referees",att:"Attendance",share:"Share attendance summary",
+ getStarted:"Get started",gs1:"Add your referees",gs2:"Schedule the first training",
+ upcoming:"Upcoming",done:"Done",cancelled:"Cancelled",past:"Past",noClasses:"No training yet. Tap + to schedule one.",
+ training:"Training",nextStep:"Next step",sendCancel:"Send cancellation",restoreT:"Restore training",editT:"Edit training",cancelT:"Cancel this training",del:"Delete",
+ sent:"Messages sent",noneSent:"Nothing sent for this training yet",markSent:"Mark as sent",sentLine:(k,w)=>`${k} sent ${w}`,longPress:"Tap an entry to remove it",waSent:k=>`WhatsApp: ${k} sent`,waNot:"WhatsApp: not sent yet",waChanged:"Changed after last message — send update",waCancelNot:"Cancellation not sent yet",waNever:"Group was never told — nothing to send",sendChange:"Send schedule change",
+ attResult:"Attendance",present:"Present",absent:"Absent",excused:"Excused",notMarked:"Not marked",counts:(p,a,e)=>`${p} present · ${a} absent · ${e} excused`,
+ newT:"New training",when:"When",date:"Date",start:"Start",program:"Training program",programHint:"Minutes per part. The end time comes from the total.",
+ total:(m,e)=>`Total ${m} min · ends ${e}`,addPart:"Add part",notes:"Notes for the message (optional)",notesPh:"e.g. Nage-no-kata set 1 · bring your rulebook",
+ saveSend:"Save & send to group",saveOnly:"Save only",partName:"Part name",custom:"Custom…",
+ marked:(n,m)=>`${n} of ${m} marked`,allPresent:"Mark everyone present",finish:"Finish",
+ history:"Attendance history",allTime:"All time",noHist:"No sessions with attendance yet.",edit:"Edit",remove:"Remove",name:"Referee name",addRef:"Add referee",
+ noRefs:"No referees yet. Tap + to add one.",tapHist:"Tap a name to see their history",rate:(p,n,x)=>`${p} of ${n} sessions (${x}%)`,noCounted:"Not counted yet",
+ msgReminder:"Reminder message",msgChange:"Schedule change message",msgCancel:"Cancellation message",msgSummary:"Attendance summary",
+ tReminder:"Reminder",tChange:"Schedule change",tCancel:"Cancellation",lBoth:"Arabic + English",lAr:"Arabic",lEn:"English",
+ steps:["Tap Open WhatsApp","Choose the group","Press ➤ Send, then come back here"],openWa:"Open WhatsApp",didSend:"Did you send it in WhatsApp?",yesSent:"Yes, sent",notYet:"Not yet",
+ whichMsg:"Date, time or program changed. Which message do you want to send?",
+ replaceEdits:"You edited this message. Replace it with the generated text?",replace:"Replace",cancel:"Cancel",
+ sReminder:"Evening reminder",sReminderHint:"The evening before each training you get a notification with the message ready to send.",
+ reminderTime:"Reminder time",breakMode:"Break / holiday",breakHint:"Pauses reminders and warnings",
+ sLang:"WhatsApp message language",appLang:"App language",sysLang:"Phone",backup:"Backup",saveBackup:"Save backup file",restoreBackup:"Restore from backup file",
+ autosave:"Changes are saved automatically.",about:"Everything stays on this phone. You send every message yourself from WhatsApp.",
+ confirmCancel:"Cancel this training?",confirmDel:"Delete this training? This cannot be undone.",confirmRemove:n=>`Remove ${n} from the list?`,
+ sendNow:"Send this to the group now?",yesSend:"Yes, send",notNow:"Not now",saved:"Saved",restored:"Training restored",
+ copied:"Copied",copyMsg:"Copy text instead",online:"Online sync",onlineOn:n=>`Connected — class "${n}"`,lastSync:w=>`Last sync: ${w}`,neverSync:"Last sync: never",classCode:"Class code",syncNow:"Sync now",shareCode:"Share class code",leave:"Leave class (keep data here)",leaveConfirm:"Stop syncing? The data stays in this browser.",left:"Left the class.",onlineHint:"Enter the class code from the phone app to see and edit the same class. Or create a new shared class here.",createClass:"Create shared class",joinClass:"Join with a code",className:"Class name",joinWarn:"Joining replaces the classes, referees and attendance in this browser with the shared class data.",created:"Shared class created.",joined:"Joined. Data downloaded.",syncing:"Syncing…",synced:"Synced",badCode:"Code not found. Check the 6 characters.",offline:"No internet — will sync later.",syncErr:m=>`Sync error: ${m}`,shareText:(n,c,u)=>`JudoRef class "${n}"\nClass code: ${c}\n\nOpen ${u} and enter the code (Android: install JudoRef, Settings → Join with a code).`,aboutWeb:"Data is kept in this browser and in the shared class. Messages are sent by you from WhatsApp.",waSim:"",waPick:"Choose a chat",waGroup:"Judo Referees 🥋",waSend:"Send ➤",waBack:"Back to JudoRef",
+ removeWhich:"Remove which entry?",trainingRestoredMsg:"Training restored (no longer cancelled)"},
+ar:{home:"الرئيسية",classes:"التمارين",referees:"الحكام",settings:"الإعدادات",next:"التمرين القادم",none:"لا يوجد تمرين مجدول",
+ schedule:"جدولة تمرين",sendRem:"إرسال تذكير",takeAtt:"تسجيل الحضور",editAtt:"تعديل الحضور",today:"اليوم",
+ hintDay:d=>`يوم التمرين القادم هو ${d}. جدوله الآن.`,hintNone:"جدول التمرين القادم ليظهر هنا.",
+ cancelledNext:d=>`تم إلغاء تمرين ${d}.`,restore:d=>`إعادة تمرين ${d}`,breakOn:"وضع العطلة مفعّل. أوقفه من الإعدادات عند استئناف التمارين.",
+ warnAtt:t=>`لم يُسجَّل الحضور لتمرين ${t}.`,warnGap:"غدًا يوم تمرين ولا يوجد شيء مجدول.",
+ thisMonth:"هذا الشهر",held:"التمارين",refs:"الحكام",att:"الحضور",share:"مشاركة ملخص الحضور",
+ getStarted:"ابدأ هنا",gs1:"أضف الحكام",gs2:"جدول أول تمرين",
+ upcoming:"قادم",done:"منتهٍ",cancelled:"ملغى",past:"سابق",noClasses:"لا توجد تمارين بعد. اضغط + للجدولة.",
+ training:"التمرين",nextStep:"الخطوة التالية",sendCancel:"إرسال إشعار الإلغاء",restoreT:"إعادة التمرين",editT:"تعديل التمرين",cancelT:"إلغاء هذا التمرين",del:"حذف",
+ sent:"الرسائل المُرسلة",noneSent:"لم يُرسل شيء لهذا التمرين بعد",markSent:"تعليم كمُرسل",sentLine:(k,w)=>`أُرسلت ${k} في ${w}`,longPress:"اضغط على سجل لإزالته",waSent:k=>`واتساب: أُرسلت ${k}`,waNot:"واتساب: لم يُرسل بعد",waChanged:"تغيّر بعد آخر رسالة — أرسل التحديث",waCancelNot:"لم يُرسل إشعار الإلغاء بعد",waNever:"لم تُبلَّغ المجموعة — لا شيء لإرساله",sendChange:"إرسال تغيير الموعد",
+ attResult:"الحضور",present:"حاضر",absent:"غائب",excused:"بعذر",notMarked:"غير مسجَّل",counts:(p,a,e)=>`${p} حاضر · ${a} غائب · ${e} بعذر`,
+ newT:"تمرين جديد",when:"الموعد",date:"التاريخ",start:"البداية",program:"برنامج التمرين",programHint:"الدقائق لكل جزء. وقت الانتهاء يُحسب من المجموع.",
+ total:(m,e)=>`المجموع ${m} دقيقة · ينتهي ${e}`,addPart:"إضافة جزء",notes:"ملاحظات للرسالة (اختياري)",notesPh:"مثال: ناغي نو كاتا المجموعة 1",
+ saveSend:"حفظ وإرسال للمجموعة",saveOnly:"حفظ فقط",partName:"اسم الجزء",custom:"مخصص…",
+ marked:(n,m)=>`تم تسجيل ${n} من ${m}`,allPresent:"تسجيل الجميع حاضرين",finish:"إنهاء",
+ history:"سجل الحضور",allTime:"الإجمالي",noHist:"لا يوجد حضور مسجَّل بعد.",edit:"تعديل",remove:"إزالة",name:"اسم الحكم",addRef:"إضافة حكم",
+ noRefs:"لا يوجد حكام بعد. اضغط + للإضافة.",tapHist:"اضغط على الاسم لعرض السجل",rate:(p,n,x)=>`${p} من ${n} تمارين (${x}%)`,noCounted:"غير محسوب بعد",
+ msgReminder:"رسالة التذكير",msgChange:"رسالة تغيير الموعد",msgCancel:"رسالة الإلغاء",msgSummary:"ملخص الحضور",
+ tReminder:"تذكير",tChange:"تغيير الموعد",tCancel:"إلغاء",lBoth:"عربي + إنجليزي",lAr:"عربي",lEn:"إنجليزي",
+ steps:["اضغط فتح واتساب","اختر المجموعة","اضغط ➤ إرسال ثم ارجع"],openWa:"فتح واتساب",didSend:"هل أرسلتها في واتساب؟",yesSent:"نعم، أُرسلت",notYet:"ليس بعد",
+ whichMsg:"تغيّر التاريخ أو الوقت أو البرنامج. أي رسالة تريد إرسالها؟",
+ replaceEdits:"لقد عدّلت هذه الرسالة. استبدالها بالنص المُنشأ؟",replace:"استبدال",cancel:"إلغاء",
+ sReminder:"تذكير المساء",sReminderHint:"مساء اليوم السابق لكل تمرين يصلك إشعار والرسالة جاهزة للإرسال.",
+ reminderTime:"وقت التذكير",breakMode:"عطلة",breakHint:"إيقاف التذكيرات والتنبيهات مؤقتًا",
+ sLang:"لغة رسائل واتساب",appLang:"لغة التطبيق",sysLang:"الهاتف",backup:"النسخ الاحتياطي",saveBackup:"حفظ ملف نسخة احتياطية",restoreBackup:"استعادة من ملف",
+ autosave:"تُحفظ التغييرات تلقائيًا.",about:"كل البيانات على هذا الهاتف فقط. أنت من يرسل كل رسالة من واتساب.",
+ confirmCancel:"إلغاء هذا التمرين؟",confirmDel:"حذف هذا التمرين؟ لا يمكن التراجع.",confirmRemove:n=>`إزالة ${n} من القائمة؟`,
+ sendNow:"إرسال هذا إلى المجموعة الآن؟",yesSend:"نعم، أرسل",notNow:"ليس الآن",saved:"تم الحفظ",restored:"أُعيد التمرين",
+ copied:"تم النسخ",copyMsg:"نسخ النص بدلاً من ذلك",online:"المزامنة عبر الإنترنت",onlineOn:n=>`متصل — الصف "${n}"`,lastSync:w=>`آخر مزامنة: ${w}`,neverSync:"آخر مزامنة: لم تتم بعد",classCode:"رمز الصف",syncNow:"مزامنة الآن",shareCode:"مشاركة رمز الصف",leave:"مغادرة الصف (الاحتفاظ بالبيانات هنا)",leaveConfirm:"إيقاف المزامنة؟ تبقى البيانات في هذا المتصفح.",left:"تمت مغادرة الصف.",onlineHint:"أدخل رمز الصف من تطبيق الهاتف لرؤية نفس الصف وتعديله، أو أنشئ صفاً مشتركاً جديداً هنا.",createClass:"إنشاء صف مشترك",joinClass:"الانضمام برمز",className:"اسم الصف",joinWarn:"الانضمام يستبدل التمارين والحكام والحضور في هذا المتصفح ببيانات الصف المشترك.",created:"تم إنشاء الصف المشترك.",joined:"تم الانضمام وتنزيل البيانات.",syncing:"جارٍ المزامنة…",synced:"تمت المزامنة",badCode:"الرمز غير موجود. تحقق من الأحرف الستة.",offline:"لا يوجد إنترنت — ستتم المزامنة لاحقاً.",syncErr:m=>`خطأ في المزامنة: ${m}`,shareText:(n,c,u)=>`صف JudoRef "${n}"\nرمز الصف: ${c}\n\nافتح ${u} وأدخل الرمز (أندرويد: ثبّت JudoRef ثم الإعدادات ← الانضمام برمز).`,aboutWeb:"تُحفظ البيانات في هذا المتصفح وفي الصف المشترك. أنت من يرسل الرسائل من واتساب.",waSim:"",waPick:"اختر محادثة",waGroup:"حكام الجودو 🥋",waSend:"إرسال ➤",waBack:"العودة إلى JudoRef",
+ removeWhich:"أي سجل تريد إزالته؟",trainingRestoredMsg:"أُعيد التمرين (لم يعد ملغى)"}
+};
+const SEGN={en:{refereeing:"Refereeing",technique:"Technique",kata:"Kata",warmup:"Warm-up",randori:"Randori"},ar:{refereeing:"تحكيم",technique:"تكنيك",kata:"كاتا",warmup:"إحماء",randori:"راندوري"}};
+
+/* ---------- sample data ---------- */
+const iso=d=>d.toISOString().slice(0,10);
+const today=new Date(); today.setHours(0,0,0,0);
+const dPlus=n=>{const x=new Date(today);x.setDate(x.getDate()+n);return iso(x);};
+const nextDow=(dow,from=1)=>{for(let i=from;i<15;i++){const x=new Date(today);x.setDate(x.getDate()+i);if(x.getDay()===dow)return iso(x);}return dPlus(1);};
+const lastDow=(dow,from=1)=>{for(let i=from;i<15;i++){const x=new Date(today);x.setDate(x.getDate()-i);if(x.getDay()===dow)return iso(x);}return dPlus(-1);};
+const PROG=[["refereeing",30],["technique",30],["kata",60]];
+const id=()=>(crypto.randomUUID?crypto.randomUUID():"w"+Date.now().toString(36)+Math.random().toString(36).slice(2));
+const S={
+  ui:"en", msgLang:"both", tab:"home", view:{name:"home"}, toast:null, sheet:null,
+  referees:[], sessions:[], attendance:{}, attMeta:{}, log:[], tomb:[],
+  sync:{code:null,name:"",since:0,last:0,err:""}
+};
+/* ---------- persistence (this browser) ---------- */
+const SAVE_KEYS=["ui","msgLang","referees","sessions","attendance","attMeta","log","tomb","sync"];
+function save(){try{const o={};SAVE_KEYS.forEach(k=>o[k]=S[k]);localStorage.setItem("judoref",JSON.stringify(o));}catch(e){}}
+(function load(){try{const o=JSON.parse(localStorage.getItem("judoref")||"null");if(o)SAVE_KEYS.forEach(k=>{if(o[k]!==undefined)S[k]=o[k];});}catch(e){}
+  const nav=(navigator.language||"en").toLowerCase();if(!localStorage.getItem("judoref")&&nav.startsWith("ar"))S.ui="ar";})();
+const now=()=>Date.now();
+const touch=o=>{o.updatedAt=now();o.dirty=1;return o;};
+const setAtt=(sid,rid,v)=>{S.attendance[sid+"|"+rid]=v;S.attMeta[sid+"|"+rid]={updatedAt:now(),dirty:1};};
+
+/* ---------- helpers ---------- */
+const t=()=>T[S.ui]; const loc=()=>S.ui==="ar"?"ar-AE-u-nu-latn":"en-GB";
+const fmtDate=d=>new Date(d+"T12:00").toLocaleDateString(loc(),{weekday:"long",day:"numeric",month:"long"});
+const fmtShort=d=>new Date(d+"T12:00").toLocaleDateString(loc(),{weekday:"short",day:"numeric",month:"short"});
+const dayName=(d,l)=>new Date(d+"T12:00").toLocaleDateString(l||loc(),{weekday:"long"});
+const fmtTime=hm=>{const[h,m]=hm.split(":").map(Number);const d=new Date();d.setHours(h,m);return d.toLocaleTimeString(loc(),{hour:"numeric",minute:"2-digit"});};
+const addMin=(hm,n)=>{const[h,m]=hm.split(":").map(Number);const tt=((h*60+m+n)%1440+1440)%1440;return String(Math.floor(tt/60)).padStart(2,"0")+":"+String(tt%60).padStart(2,"0");};
+const total=s=>s.segs.reduce((a,p)=>a+p[1],0)||120;
+const range=s=>fmtTime(s.time)+" – "+fmtTime(addMin(s.time,total(s)));
+const started=s=>new Date(s.date+"T"+s.time)<new Date();
+const progLine=s=>s.segs.filter(p=>p[1]>0).map(p=>segName(p[0])+" "+p[1]+"′").join(" · ");
+const segName=k=>k.startsWith("c:")?k.slice(2):SEGN[S.ui][k];
+const isoToday=iso(today), isoTom=dPlus(1);
+const sessionsOn=d=>S.sessions.filter(s=>s.date===d);
+const nextSession=()=>S.sessions.filter(s=>s.status==="upcoming"&&s.date>=isoToday).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))[0];
+const isClassDay=d=>{const dow=new Date(d+"T12:00").getDay();const from=dPlus(-35);return S.sessions.some(s=>s.status!=="cancelled"&&s.date>=from&&s.date<=isoToday&&new Date(s.date+"T12:00").getDay()===dow);};
+const attOf=(sid,rid)=>S.attendance[sid+"|"+rid];
+const monthPrefix=isoToday.slice(0,7);
+const stats=(rid,month)=>{let p=0,c=0;S.sessions.filter(s=>s.status==="done"&&(!month||s.date.startsWith(month))).forEach(s=>{const v=attOf(s.id,rid);if(v==="present"){p++;c++;}else if(v==="absent")c++;});return[p,c];};
+const pct=(p,c)=>c?Math.round(100*p/c):0;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const kindName=k=>({reminder:t().tReminder,change:t().tChange,cancel:t().tCancel,summary:t().msgSummary}[k]);
+const lastLog=s=>S.log.filter(x=>x.sid===s.id).sort((a,b)=>b.at-a.at)[0];
+/* what the group needs next: "reminder" | "change" | "cancel" | null */
+const needs=s=>{const l=lastLog(s);if(s.status==="cancelled")return l&&l.kind!=="cancel"?"cancel":null;if(s.status==="done")return null;if(!l)return "reminder";if(l.kind==="cancel")return "change";/* restored after a sent cancellation: re-announce */ if((s.changedAt||0)>l.at)return "change";return null;};
+const waStatus=s=>{const l=lastLog(s),n=needs(s),tt=t();
+  if(n==="change")return `<span class="wa-st warn">⚠ ${tt.waChanged}</span>`;
+  if(n==="cancel")return `<span class="wa-st no">✗ ${tt.waCancelNot}</span>`;
+  if(n==="reminder")return `<span class="wa-st no">✗ ${tt.waNot}</span>`;
+  if(l)return `<span class="wa-st ok">✓ ${tt.waSent(kindName(l.kind))}</span>`;
+  return "";};
+const fmtAt=ms=>new Date(ms).toLocaleString(loc(),{weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"});
+
+/* ---------- messages (same templates as the app) ---------- */
+const timeAr=hm=>{const[h,m]=hm.split(":").map(Number);return `${h%12||12}:${String(m).padStart(2,"0")} ${h<12?"صباحاً":"مساءً"}`;};
+const timeEn=hm=>{const[h,m]=hm.split(":").map(Number);return `${h%12||12}:${String(m).padStart(2,"0")} ${h<12?"AM":"PM"}`;};
+const dm=(d,l)=>new Date(d+"T12:00").toLocaleDateString(l,{day:"numeric",month:"long"});
+function whenAr(s,withDate){const day=dayName(s.date,"ar-AE-u-nu-latn");const d=s.date===isoToday?"اليوم "+day:s.date===isoTom?"غداً "+day:"يوم "+day+(withDate?" "+dm(s.date,"ar-AE-u-nu-latn"):"");return d+" من الساعة "+timeAr(s.time)+" إلى "+timeAr(addMin(s.time,total(s)));}
+function whenEn(s,withDate){const day=dayName(s.date,"en-GB");const d=s.date===isoToday?"today, "+day:s.date===isoTom?"tomorrow, "+day:"on "+day+(withDate?", "+dm(s.date,"en-GB"):"");return d+", from "+timeEn(s.time)+" to "+timeEn(addMin(s.time,total(s)));}
+const progAr=s=>s.segs.some(p=>p[1]>0)?"برنامج التمرين:\n"+s.segs.filter(p=>p[1]>0).map(p=>`${p[1]} دقيقة: ${p[0].startsWith("c:")?p[0].slice(2):SEGN.ar[p[0]]}`).join("\n")+"\n":"";
+const progEn=s=>s.segs.some(p=>p[1]>0)?"Training Program:\n"+s.segs.filter(p=>p[1]>0).map(p=>`${p[1]} minutes: ${p[0].startsWith("c:")?p[0].slice(2):SEGN.en[p[0]]}`).join("\n")+"\n":"";
+function chain(s){const out=[s];let d=s.date;for(let i=0;i<6;i++){d=addDays(d,1);const up=sessionsOn(d).find(x=>x.status==="upcoming");if(!up)break;out.push(up);}return out;}
+const addDays=(d,n)=>{const x=new Date(d+"T12:00");x.setDate(x.getDate()+n);return iso(x);};
+function buildMsg(kind,s,lang){
+  if(kind==="summary")return summaryMsg(lang);
+  const notes=s.notes.trim()?s.notes.trim()+"\n":"";let ar,en;
+  if(kind==="reminder"){const b=chain(s);const wa=b.map((x,i)=>i?"، وكذلك "+whenAr(x,false):whenAr(x,true)).join("");const we=b.map((x,i)=>i?", and also "+whenEn(x,false):whenEn(x,true)).join("");
+    ar=`السلام عليكم جميعاً،\nتذكير بموعد التمرين ${wa}.\n${progAr(s)}${notes}نرجو من الجميع الالتزام بالوقت، ونشوفكم على خير.`;
+    en=`Dear all,\nThis is a reminder that our training session${b.length>1?"s":""} will be ${we}.\n${progEn(s)}${notes}Please make sure to arrive on time. See you all.`;}
+  else if(kind==="change"){ar=`السلام عليكم جميعاً،\nنود إعلامكم بتغيير موعد التمرين. الموعد الجديد: ${whenAr(s,true)}.\n${progAr(s)}${notes}نرجو من الجميع الالتزام بالوقت، ونشوفكم على خير.`;
+    en=`Dear all,\nPlease note that the training schedule has changed. The new time is ${whenEn(s,true)}.\n${progEn(s)}${notes}Please make sure to arrive on time. See you all.`;}
+  else {ar=`السلام عليكم جميعاً،\nنود إعلامكم بأنه تم إلغاء تمرين ${whenAr(s,true)}.\n${notes}سنوافيكم بموعد التمرين القادم، وشكراً لتفهمكم.`;
+    en=`Dear all,\nPlease note that the training session ${whenEn(s,true)} has been cancelled.\n${notes}We will let you know the date of the next session. Thank you for your understanding.`;}
+  return lang==="ar"?ar:lang==="en"?en:ar+"\n\n"+en;
+}
+function summaryMsg(lang){const n=S.sessions.filter(s=>s.status==="done"&&s.date.startsWith(monthPrefix)).length;
+  const lines=S.referees.map(r=>{const[p,c]=stats(r.id,monthPrefix);return `• ${r.name}: ${c?p+"/"+c:"—"}`;}).join("\n");
+  const ar=`ملخص الحضور لهذا الشهر\nعدد التمارين: ${n}\n${lines}`,en=`Attendance summary for this month\nSessions held: ${n}\n${lines}`;return lang==="ar"?ar:lang==="en"?en:ar+"\n\n"+en;}
+
+/* ---------- ui primitives ---------- */
+const ICON={home:'<svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>',
+ cal:'<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+ people:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5a5 5 0 0 1 6 4.5"/></svg>',
+ back:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+ gear:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+ chev:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>',
+ send:'<svg viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>',
+ check:'<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>',
+ plus:'<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>'};
+const chip=(cls,txt)=>`<span class="chip ${cls}">${txt}</span>`;
+const statusChip=s=>s.status==="cancelled"?chip("cancel",t().cancelled):s.status==="done"?chip("done",t().done):started(s)?chip("past",t().past):chip("up",t().upcoming);
+function bar(title,{back=null,sub="",right=""}={}){return `<div class="bar">${back?`<button class="icon-btn" data-go="${back}" aria-label="Back">${ICON.back}</button>`:""}<div class="title-wrap"><h1>${title}</h1>${sub?`<div class="sub">${sub}</div>`:""}</div>${right}</div>`;}
+function nav(){const items=[["home",ICON.home,t().home],["classes",ICON.cal,t().classes],["referees",ICON.people,t().referees]];
+  return `<div class="nav">${items.map(([k,i,l])=>`<button class="${S.tab===k?"on":""}" data-tab="${k}">${i}<span class="pill">${l}</span></button>`).join("")}</div>`;}
+function toast(msg){S.toast=msg;render();setTimeout(()=>{S.toast=null;render();},1800);}
+function sheet(html,actions){S.sheet={html,actions};render();}
+function closeSheet(){S.sheet=null;render();}
+function confirmSheet(msg,okLabel,onOk,{danger=false}={}){sheet(`<h3>${msg}</h3><div class="row-btns"><button class="btn ghost sm" data-act="close">${t().cancel}</button><button class="btn ${danger?"danger":"primary"} sm" data-act="ok">${okLabel}</button></div>`,{ok:onOk});}
+
+/* ---------- screens ---------- */
+function homeView(){
+  const tt=t();const next=nextSession();const noRefs=!S.referees.length,noSess=!S.sessions.length;
+  let warn="";if(S.referees.length&&!S.brk){const late=sessionsOn(isoToday).filter(s=>s.status==="upcoming"&&started(s)&&!Object.keys(S.attendance).some(k=>k.startsWith(s.id+"|"))).sort((a,b)=>a.time.localeCompare(b.time))[0];
+    if(late)warn=tt.warnAtt(fmtTime(late.time));else if(isClassDay(isoTom)&&!sessionsOn(isoTom).length)warn=tt.warnGap;}
+  let hero,btns;
+  if(!next){let sub="";const canc=S.sessions.filter(s=>s.status==="cancelled"&&s.date>=isoToday).sort((a,b)=>a.date.localeCompare(b.date))[0];let restore="";
+    if(S.brk)sub=tt.breakOn;else if(canc){sub=tt.cancelledNext(dayName(canc.date));restore=`<button class="btn tonal" data-open="${canc.id}">${tt.restore(dayName(canc.date))}</button>`;}
+    else if(!(noRefs||noSess)){let hit=null;for(let i=1;i<=7;i++){const d=dPlus(i);if(isClassDay(d)){hit=d;break;}}sub=hit?tt.hintDay(dayName(hit)):tt.hintNone;}
+    hero=`<div class="hero"><div class="eyebrow">${tt.next}</div><div class="big">${tt.none}</div><div class="meta">${sub}</div></div>`;
+    btns=`${restore}<button class="btn primary" data-go="new">${ICON.plus}${tt.schedule}</button>`;}
+  else{const st=started(next);
+    hero=`<div class="hero">${statusChip(next)}<div class="eyebrow">${tt.next}</div><div class="big">${fmtDate(next.date)}</div><div class="time">⏰ ${range(next)}</div><div class="meta">${progLine(next)}${next.notes?" · "+esc(next.notes):""}</div><div class="meta" style="margin-top:8px">${waStatus(next)}</div></div>`;
+    const n=needs(next);btns=`<button class="btn ${st?"tonal":"primary"}" data-msg="${n==="change"?"change":"reminder"}" data-sid="${next.id}">${ICON.send}${n==="change"?tt.sendChange:tt.sendRem}</button>${next.date<=isoToday?`<button class="btn ${st?"primary":"tonal"}" data-att="${next.id}">${ICON.check}${tt.takeAtt}</button>`:""}`;}
+  const held=S.sessions.filter(s=>s.status==="done"&&s.date.startsWith(monthPrefix)).length;let P=0,C=0;S.referees.forEach(r=>{const[p,c]=stats(r.id,monthPrefix);P+=p;C+=c;});
+  const gs=(noRefs||noSess)?`<div class="card"><div class="eyebrow">${tt.getStarted}</div><div class="steps"><div class="step ${noRefs?"":"done"}"><i>${noRefs?"1":"✓"}</i><button data-tab="referees">${tt.gs1}</button></div><div class="step ${noSess?"":"done"}"><i>${noSess?"2":"✓"}</i><button data-go="new">${tt.gs2}</button></div></div></div>`:"";
+  return bar("JudoRef",{sub:fmtDate(isoToday),right:`<button class="icon-btn" data-go="settings" aria-label="Settings">${ICON.gear}</button>`})+
+   `<div class="scroll">${hero}${gs}${warn?`<div class="notice">⚠️ <span>${warn}</span></div>`:""}<div class="card">${btns}</div>
+    <div class="card"><div class="eyebrow">${tt.thisMonth}</div><div class="stats"><div class="stat"><b>${held}</b><span>${tt.held}</span></div><div class="stat"><b>${S.referees.length}</b><span>${tt.refs}</span></div><div class="stat"><b>${C?pct(P,C)+"%":"—"}</b><span>${tt.att}</span></div></div><button class="btn tonal sm" data-msg="summary">${ICON.send}${tt.share}</button></div></div>`+nav();
+}
+function classesView(){const tt=t();const list=[...S.sessions].sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+  const rows=list.length?`<div class="list">${list.map(s=>{const done=s.status==="done";const cnt=done?tt.counts(...["present","absent","excused"].map(v=>S.referees.filter(r=>attOf(s.id,r.id)===v).length)):progLine(s);
+    return `<button class="item" data-open="${s.id}"><div class="body"><div class="t">${fmtDate(s.date)}</div><div class="s">⏰ ${range(s)}</div><div class="s">${cnt}</div><div class="s">${waStatus(s)}</div></div>${statusChip(s)}<span class="chev">${ICON.chev}</span></button>`;}).join("")}</div>`:`<div class="muted">${tt.noClasses}</div>`;
+  return bar(tt.classes)+`<div class="scroll">${rows}</div><button class="fab" data-go="new" aria-label="${tt.schedule}">+</button>`+nav();}
+function refereesView(){const tt=t();
+  const rows=S.referees.length?`<div class="list">${S.referees.map(r=>{const[p,c]=stats(r.id,monthPrefix);return `<button class="item" data-ref="${r.id}"><div class="avatar">${esc(r.name.trim()[0]||"?").toUpperCase()}</div><div class="body"><div class="t">${esc(r.name)}</div><div class="s">${c?tt.rate(p,c,pct(p,c)):"— "+tt.noCounted}</div><div class="bar-track"><div class="bar-fill" style="width:${c?pct(p,c):0}%"></div></div></div><span class="chev">${ICON.chev}</span></button>`;}).join("")}</div>`:`<div class="muted">${tt.noRefs}</div>`;
+  return bar(tt.referees,{sub:tt.tapHist})+`<div class="scroll">${rows}</div><button class="fab" data-add-ref aria-label="${tt.addRef}">+</button>`+nav();}
+function sessionView(sid){const tt=t();const s=S.sessions.find(x=>x.id===sid);if(!s)return homeView();const st=started(s);
+  let primary="",secondary="",attCard="";
+  if(s.status==="cancelled"){const nc=needs(s)==="cancel";primary=nc?`<button class="btn primary" data-msg="cancel" data-sid="${s.id}">${ICON.send}${tt.sendCancel}</button>`:`<button class="btn primary" data-restore="${s.id}">${tt.restoreT}</button>`;secondary=nc?`<button class="btn tonal" data-restore="${s.id}">${tt.restoreT}</button>`:"";}
+  else if(s.status==="done"){primary=`<button class="btn primary" data-att="${s.id}">${ICON.check}${tt.editAtt}</button>`;
+    const rows=S.referees.map(r=>{const v=attOf(s.id,r.id);const c=v==="present"?chip("done","✓ "+tt.present):v==="absent"?chip("cancel","✗ "+tt.absent):v==="excused"?chip("past",tt.excused):chip("none",tt.notMarked);return `<div class="toggle" style="padding:8px 0"><span style="font-weight:700">${esc(r.name)}</span>${c}</div>`;}).join("");
+    attCard=`<div class="card"><div class="eyebrow">${tt.attResult}</div><div class="muted">${tt.counts(...["present","absent","excused"].map(v=>S.referees.filter(r=>attOf(s.id,r.id)===v).length))}</div><div>${rows}</div></div>`;}
+  else if(st){primary=`<button class="btn primary" data-att="${s.id}">${ICON.check}${tt.takeAtt}</button>`;}
+  else{const n=needs(s);primary=n==="change"?`<button class="btn primary" data-msg="change" data-sid="${s.id}">${ICON.send}${tt.sendChange}</button>`:`<button class="btn primary" data-msg="reminder" data-sid="${s.id}">${ICON.send}${tt.sendRem}</button>`;secondary=s.date<=isoToday?`<button class="btn tonal" data-att="${s.id}">${ICON.check}${tt.takeAtt}</button>`:"";}
+  const logs=S.log.filter(l=>l.sid===s.id).sort((a,b)=>a.at-b.at);
+  const sent=logs.length?logs.map(l=>`<button class="item" style="padding:8px 0" data-dellog="${l.id}"><div class="body"><div class="s" style="color:var(--ink)">📨 ${tt.sentLine(kindName(l.kind),fmtAt(l.at))}</div></div></button>`).join(""):`<div class="none">📨 ${tt.noneSent}</div>`;
+  return bar(tt.training,{back:"back"})+`<div class="scroll">
+   <div class="hero">${statusChip(s)}<div class="big">${fmtDate(s.date)}</div><div class="time">⏰ ${range(s)}</div><div class="meta">${progLine(s)}</div>${s.notes?`<div class="meta">${esc(s.notes)}</div>`:""}</div>
+   <div class="card"><div class="eyebrow">${tt.nextStep}</div>${primary}${secondary}</div>${attCard}
+   <div class="card"><div class="eyebrow">${tt.sent}</div><div class="sent-list">${sent}</div><div class="tiny">${logs.length?tt.longPress:""}</div><button class="btn ghost sm" data-marksent="${s.id}">${tt.markSent}</button></div>
+   <div class="card"><button class="btn ghost sm" data-edit="${s.id}">✏️ ${tt.editT}</button>${s.status==="upcoming"?`<button class="btn danger sm" data-cancel="${s.id}">${tt.cancelT}</button>`:""}<button class="btn ghost sm" style="color:var(--ink-3)" data-del="${s.id}">${tt.del}</button></div></div>`;}
+let E=null;/* edit state */
+function editView(){const tt=t();const e=E;const tot=e.segs.reduce((a,p)=>a+p[1],0);
+  const parts=e.segs.map((p,i)=>`<div class="part"><span class="name">${esc(segName(p[0]))}</span><div class="stepper"><button data-step="${i}|-5">−</button><b>${p[1]}′</b><button data-step="${i}|5">+</button></div><button class="x" data-rmpart="${i}">✕</button></div>`).join("");
+  return bar(e.id?tt.editT:tt.newT,{back:"back"})+`<div class="scroll">
+   <div class="card"><div class="eyebrow">${tt.when}</div><div class="row-btns"><div class="field" style="flex:1.4"><label>${tt.date}</label><input class="input" type="date" id="f-date" value="${e.date}"></div><div class="field" style="flex:1"><label>${tt.start}</label><input class="input" type="time" id="f-time" value="${e.time}"></div></div><div class="muted">${tt.total(tot,fmtTime(addMin(e.time,tot||120)))}</div></div>
+   <div class="card"><div class="eyebrow">${tt.program}</div><div class="tiny">${tt.programHint}</div><div>${parts}</div><button class="btn ghost sm" data-addpart>＋ ${tt.addPart}</button></div>
+   <div class="card"><div class="field"><label>${tt.notes}</label><textarea class="input" id="f-notes" placeholder="${tt.notesPh}" style="min-height:80px">${esc(e.notes)}</textarea></div></div>
+   <button class="btn primary" data-save="send">${ICON.send}${tt.saveSend}</button><button class="btn tonal" data-save="only">${tt.saveOnly}</button></div>`;}
+function attView(sid){const tt=t();const s=S.sessions.find(x=>x.id===sid);const marked=S.referees.filter(r=>attOf(s.id,r.id)).length;
+  const rows=S.referees.map(r=>{const v=attOf(s.id,r.id);return `<div class="att-row"><div class="n">${esc(r.name)}</div><div class="seg"><button class="${v==="present"?"on p":""}" data-mark="${r.id}|present">${tt.present}</button><button class="${v==="absent"?"on a":""}" data-mark="${r.id}|absent">${tt.absent}</button><button class="${v==="excused"?"on e":""}" data-mark="${r.id}|excused">${tt.excused}</button></div></div>`;}).join("");
+  return bar(tt.attResult,{back:"back",sub:fmtShort(s.date)+" · "+range(s)})+`<div class="scroll">
+   <div class="card"><div style="display:flex;justify-content:space-between;font-weight:800"><span>${tt.marked(marked,S.referees.length)}</span><span style="color:var(--navy)">${S.referees.length?Math.round(100*marked/S.referees.length):0}%</span></div><div class="bar-track" style="margin-top:0"><div class="bar-fill" style="width:${S.referees.length?100*marked/S.referees.length:0}%;background:var(--navy)"></div></div><button class="btn ghost sm" data-allpresent>${tt.allPresent}</button></div>
+   <div class="card"><div>${rows||`<div class="muted">${tt.noRefs}</div>`}</div></div></div>
+   <div style="padding:10px 16px 14px;border-top:1px solid var(--line)"><button class="btn primary" data-finish="${s.id}">${ICON.check}${tt.finish}</button></div>`;}
+function refView(rid){const tt=t();const r=S.referees.find(x=>x.id===rid);if(!r)return refereesView();const[mp,mc]=stats(r.id,monthPrefix),[ap,ac]=stats(r.id,null);
+  const hist=S.sessions.filter(s=>s.status==="done").sort((a,b)=>b.date.localeCompare(a.date)).map(s=>{const v=attOf(s.id,r.id);const c=v==="present"?chip("done","✓ "+tt.present):v==="absent"?chip("cancel","✗ "+tt.absent):v==="excused"?chip("past",tt.excused):chip("none",tt.notMarked);return `<div class="toggle" style="padding:10px 0;border-bottom:1px solid var(--line)"><span style="font-weight:600">${fmtShort(s.date)} · ${fmtTime(s.time)}</span>${c}</div>`;}).join("");
+  return bar(esc(r.name),{back:"back"})+`<div class="scroll">
+   <div class="hero" style="flex-direction:row;align-items:center;gap:14px"><div class="avatar" style="background:rgba(255,255,255,.18);color:#fff;width:56px;height:56px;font-size:24px">${esc(r.name.trim()[0]).toUpperCase()}</div><div><div class="big" style="font-size:22px">${esc(r.name)}</div><div class="meta">${tt.thisMonth}: ${mc?tt.rate(mp,mc,pct(mp,mc)):"— "+tt.noCounted}</div><div class="meta" style="margin-top:0">${tt.allTime}: ${ac?tt.rate(ap,ac,pct(ap,ac)):"— "+tt.noCounted}</div></div></div>
+   <div class="card"><div class="eyebrow">${tt.history}</div>${hist||`<div class="muted">${tt.noHist}</div>`}</div>
+   <div class="card"><button class="btn ghost sm" data-editref="${r.id}">✏️ ${tt.edit}</button><button class="btn danger sm" data-rmref="${r.id}">${tt.remove}</button></div></div>`;}
+let M=null;/* message state */
+function msgView(){const tt=t();const m=M;const s=S.sessions.find(x=>x.id===m.sid);const title={reminder:tt.msgReminder,change:tt.msgChange,cancel:tt.msgCancel,summary:tt.msgSummary}[m.kind];
+  const kinds=m.kind==="summary"?"":`<div class="seg">${[["reminder",tt.tReminder],["change",tt.tChange],["cancel",tt.tCancel]].map(([k,l])=>`<button class="${m.kind===k?"on":""}" data-kind="${k}">${l}</button>`).join("")}</div>`;
+  const langs=`<div class="seg">${[["both",tt.lBoth],["ar",tt.lAr],["en",tt.lEn]].map(([k,l])=>`<button class="${m.lang===k?"on":""}" data-lang="${k}">${l}</button>`).join("")}</div>`;
+  return bar(title,{back:"back"})+`<div class="scroll">
+   <div class="card">${kinds}${langs}<textarea class="input" id="f-msg" style="min-height:220px;font-size:14px">${esc(m.text)}</textarea></div>
+   <div class="card"><div class="eyebrow">${tt.nextStep}</div><div class="steps">${tt.steps.map((x,i)=>`<div class="step"><i>${i+1}</i><span>${x}</span></div>`).join("")}</div></div></div>
+   <div style="padding:10px 16px 14px;border-top:1px solid var(--line)"><button class="btn primary" data-openwa>${ICON.send}${tt.openWa}</button><button class="btn ghost sm" data-copymsg style="margin-top:8px">${tt.copyMsg}</button></div>`;}
+function waView(){const tt=t();const m=M;return `<div style="flex:1;display:flex;flex-direction:column;background:#0b141a;color:#e9edef;padding:16px;gap:12px;font-family:system-ui">
+   <div style="font-size:12px;opacity:.6">${tt.waSim}</div>${m.waStep===0?`<div style="font-weight:700">${tt.waPick}</div><button class="item" style="background:#1f2c34;border-radius:12px;color:#e9edef" data-wapick><div class="avatar" style="background:#005c4b;color:#fff">🥋</div><div class="body"><div class="t">${tt.waGroup}</div><div class="s" style="color:#8696a0">32 members</div></div></button>`
+   :`<div style="font-weight:700">${tt.waGroup}</div><div class="wa" style="flex:1;overflow:auto"><div class="bubble">${esc(m.text)}</div></div><div class="row-btns"><button class="btn ghost" style="background:#1f2c34;color:#e9edef" data-waback>${tt.waBack}</button><button class="btn" style="background:#00a884;color:#fff" data-wasend>${tt.waSend}</button></div>`}</div>`;}
+function settingsView(){const tt=t();
+  const segs=(cur,opts,attr)=>`<div class="seg">${opts.map(([k,l])=>`<button class="${cur===k?"on":""}" data-${attr}="${k}">${l}</button>`).join("")}</div>`;
+  const on=!!S.sync.code;const last=S.sync.last?new Date(S.sync.last).toLocaleString(loc(),{weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}):null;
+  const online=on?`<div style="font-weight:700">${tt.onlineOn(esc(S.sync.name||""))}</div><div class="tiny">${last?tt.lastSync(last):tt.neverSync}${S.sync.err?"<br>⚠ "+esc(S.sync.err):""}</div>
+      <div class="field"><label>${tt.classCode}</label><div style="font-size:26px;font-weight:800;letter-spacing:.12em">${esc(S.sync.code)}</div></div>
+      <button class="btn primary sm" data-sync="now">${tt.syncNow}</button><button class="btn ghost sm" data-sync="share">${tt.shareCode}</button><button class="btn ghost sm" data-sync="leave" style="color:var(--bad)">${tt.leave}</button>`
+    :`<div class="tiny">${tt.onlineHint}</div><button class="btn primary sm" data-sync="create">${tt.createClass}</button><button class="btn tonal sm" data-sync="join">${tt.joinClass}</button>`;
+  return bar(tt.settings,{back:"back"})+`<div class="scroll"><div class="tiny">${tt.autosave}</div>
+   <div class="card"><div class="eyebrow">${tt.online}</div>${online}</div>
+   <div class="card"><div class="eyebrow">${tt.sLang}</div>${segs(S.msgLang,[["both",tt.lBoth],["ar",tt.lAr],["en",tt.lEn]],"msglang")}<div class="eyebrow" style="margin-top:6px">${tt.appLang}</div>${segs(S.ui,[["en","English"],["ar","العربية"]],"uilang")}</div>
+   <div class="card"><div class="eyebrow">${tt.backup}</div><button class="btn ghost sm" data-sync="export">${tt.saveBackup}</button><div class="tiny">${tt.aboutWeb}</div></div></div>`;}
+
+/* ---------- online sync (same server + rules as the Android app) ---------- */
+const Sync={
+  BASE:"https://qaocnwayovacfkdaakdd.supabase.co/rest/v1/rpc/", KEY:"sb_publishable_Sbf9FyryOKEw-JZcCkkMRA_MbB4tgyN", WEB:"https://dragonemprorx90.github.io/judoref-web/",
+  running:false,
+  async call(fn,body){const r=await fetch(this.BASE+fn,{method:"POST",headers:{apikey:this.KEY,"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(body)});
+    const txt=await r.text();if(!r.ok){let m=txt;try{m=JSON.parse(txt).message||txt;}catch(e){}const e=new Error(m);e.status=r.status;throw e;}return JSON.parse(txt);},
+  segStr:segs=>segs.filter(p=>p[1]>0).map(p=>p[0]+":"+p[1]).join(";"),
+  segArr:str=>(str||"").split(";").filter(Boolean).map(x=>{const i=x.lastIndexOf(":");return [x.slice(0,i),+x.slice(i+1)||0];}),
+  dirty(){const refs=S.referees.filter(r=>r.dirty).map(r=>({id:r.id,name:r.name,updatedAt:r.updatedAt||0,deletedAt:null}));
+    const ses=S.sessions.filter(x=>x.dirty).map(x=>({id:x.id,date:x.date,time:x.time,status:x.status,notes:x.notes||"",segments:this.segStr(x.segs),changedAt:x.changedAt||0,updatedAt:x.updatedAt||0,deletedAt:null}));
+    const att=Object.keys(S.attMeta).filter(k=>S.attMeta[k].dirty).map(k=>{const[sid,rid]=k.split("|");return {sessionId:sid,refereeId:rid,status:S.attendance[k],updatedAt:S.attMeta[k].updatedAt};});
+    const log=S.log.filter(l=>l.dirty).map(l=>({id:l.id,sessionId:l.sid||null,kind:l.kind,createdAt:l.at,updatedAt:l.updatedAt||l.at,deletedAt:null}));
+    S.tomb.forEach(tb=>{const r=tb.row;if(tb.t==="referees")refs.push({id:r.id,name:r.name,updatedAt:r.updatedAt,deletedAt:r.deletedAt});
+      else if(tb.t==="sessions")ses.push({id:r.id,date:r.date,time:r.time,status:r.status,notes:r.notes||"",segments:this.segStr(r.segs||[]),changedAt:r.changedAt||0,updatedAt:r.updatedAt,deletedAt:r.deletedAt});
+      else log.push({id:r.id,sessionId:r.sid||null,kind:r.kind,createdAt:r.at,updatedAt:r.updatedAt,deletedAt:r.deletedAt});});
+    return {referees:refs,sessions:ses,attendance:att,messagelog:log};},
+  clearDirty(sent){const stamp={};sent.referees.forEach(r=>stamp["r"+r.id]=r.updatedAt);sent.sessions.forEach(x=>stamp["s"+x.id]=x.updatedAt);sent.messagelog.forEach(l=>stamp["l"+l.id]=l.updatedAt);
+    S.referees.forEach(r=>{if(stamp["r"+r.id]===r.updatedAt)r.dirty=0;});S.sessions.forEach(x=>{if(stamp["s"+x.id]===x.updatedAt)x.dirty=0;});S.log.forEach(l=>{if(stamp["l"+l.id]===(l.updatedAt||l.at))l.dirty=0;});
+    sent.attendance.forEach(a=>{const m=S.attMeta[a.sessionId+"|"+a.refereeId];if(m&&m.updatedAt===a.updatedAt)m.dirty=0;});S.tomb=[];},
+  apply(p){const lww=(arr,row,make)=>{const i=arr.findIndex(x=>x.id===row.id);if(i>=0){if((arr[i].updatedAt||0)<=row.updatedAt){if(row.deletedAt)arr.splice(i,1);else arr[i]=make(row);}}else if(!row.deletedAt)arr.push(make(row));};
+    (p.referees||[]).forEach(r=>lww(S.referees,r,r=>({id:r.id,name:r.name,updatedAt:r.updatedAt,dirty:0})));
+    (p.sessions||[]).forEach(x=>lww(S.sessions,x,x=>({id:x.id,date:x.date,time:x.time,status:x.status,notes:x.notes||"",segs:this.segArr(x.segments),changedAt:x.changedAt||0,updatedAt:x.updatedAt,dirty:0})));
+    (p.attendance||[]).forEach(a=>{const k=a.sessionId+"|"+a.refereeId;const m=S.attMeta[k];if(!m||m.updatedAt<=a.updatedAt){S.attendance[k]=a.status;S.attMeta[k]={updatedAt:a.updatedAt,dirty:0};}});
+    (p.messagelog||[]).forEach(l=>lww(S.log,{...l,at:l.createdAt},l=>({id:l.id,sid:l.sessionId,kind:l.kind,at:l.createdAt,updatedAt:l.updatedAt,dirty:0})));},
+  async run(){const d=this.dirty();if(d.referees.length+d.sessions.length+d.attendance.length+d.messagelog.length){const r=await this.call("jr_push",{p_code:S.sync.code,p_data:d});if(!r.ok)throw new Error("push failed");this.clearDirty(d);}
+    const p=await this.call("jr_pull",{p_code:S.sync.code,p_since:S.sync.since||0});this.apply(p);S.sync.since=p.now;S.sync.last=Date.now();S.sync.err="";},
+  friendly(e){const tt=t();if(e.message==="BAD_CODE")return tt.badCode;if(e.status)return tt.syncErr(e.message);return tt.offline;},
+  kick(cb){if(!S.sync.code||this.running)return;this.running=true;this.run().then(()=>{this.running=false;save();if(cb)cb(true);render();}).catch(e=>{this.running=false;S.sync.err=this.friendly(e);save();if(cb)cb(false,S.sync.err);});},
+  async create(name){const r=await this.call("jr_create_class",{p_name:name});S.sync={code:r.code,name,since:0,last:0,err:""};S.referees.forEach(x=>x.dirty=1);S.sessions.forEach(x=>x.dirty=1);S.log.forEach(x=>x.dirty=1);Object.values(S.attMeta).forEach(m=>m.dirty=1);await this.run();},
+  async join(code){const r=await this.call("jr_join",{p_code:code});S.referees=[];S.sessions=[];S.attendance={};S.attMeta={};S.log=[];S.tomb=[];S.sync={code:r.code,name:r.name||"",since:0,last:0,err:""};await this.run();},
+  leave(){S.sync={code:null,name:"",since:0,last:0,err:""};S.referees.forEach(x=>x.dirty=1);S.sessions.forEach(x=>x.dirty=1);S.log.forEach(x=>x.dirty=1);Object.values(S.attMeta).forEach(m=>m.dirty=1);}
+};
+window.addEventListener("focus",()=>Sync.kick());document.addEventListener("visibilitychange",()=>{if(!document.hidden)Sync.kick();});
+/* ---------- router / render ---------- */
+const stack=[];
+function go(view){stack.push(S.view);S.view=view;render();}
+function back(){S.view=stack.pop()||{name:"home"};render();}
+function render(){
+  const app=document.getElementById("app");app.setAttribute("dir",S.ui==="ar"?"rtl":"ltr");app.lang=S.ui;
+  const v=S.view;let html="";
+  if(v.name==="home")html=homeView();else if(v.name==="classes")html=classesView();else if(v.name==="referees")html=refereesView();
+  else if(v.name==="session")html=sessionView(v.id);else if(v.name==="edit")html=editView();else if(v.name==="att")html=attView(v.id);
+  else if(v.name==="ref")html=refView(v.id);else if(v.name==="msg")html=msgView();else if(v.name==="settings")html=settingsView();
+  if(S.sheet)html+=`<div class="sheet-wrap"><div class="sheet"><div class="grab"></div>${S.sheet.html}</div></div>`;
+  if(S.toast)html+=`<div class="toast">${S.toast}</div>`;
+  app.innerHTML=html;
+  save();
+}
+function openMsg(kind,sid){M={kind,sid,lang:S.msgLang,text:"",waStep:null};M.text=buildMsg(kind,S.sessions.find(x=>x.id===sid),M.lang);M.gen=M.text;go({name:"msg"});}
+function startEdit(s){E=s?{id:s.id,date:s.date,time:s.time,notes:s.notes,status:s.status,segs:s.segs.map(p=>[...p]),orig:JSON.stringify([s.date,s.time,s.segs])}
+  :(()=>{const last=[...S.sessions].filter(x=>x.status!=="cancelled").sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time)).find(x=>x.date<=isoToday)||[...S.sessions].filter(x=>x.status!=="cancelled").sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time))[0];
+    let date=null;for(let i=1;i<=14;i++){const d=dPlus(i);if(isClassDay(d)&&!sessionsOn(d).length){date=d;break;}}
+    return {id:null,date:date||isoTom,time:last?last.time:"09:00",notes:"",status:"upcoming",segs:last?last.segs.map(p=>[...p]):PROG.map(p=>[...p]),orig:null};})();
+  go({name:"edit"});}
+function saveEdit(send){const e=E;e.date=document.getElementById("f-date").value||e.date;e.time=document.getElementById("f-time").value||e.time;e.notes=document.getElementById("f-notes").value;
+  const tt=t();let s;const isNew=!e.id;const whenChanged=!isNew&&JSON.stringify([e.date,e.time])!==JSON.stringify(JSON.parse(e.orig).slice(0,2));const changed=!isNew&&JSON.stringify([e.date,e.time,e.segs])!==e.orig;
+  let restored=false;if(e.status==="cancelled"&&whenChanged){e.status="upcoming";restored=true;}
+  if(isNew){s=touch({id:id(),date:e.date,time:e.time,notes:e.notes,status:"upcoming",segs:e.segs,changedAt:0});S.sessions.push(s);}else{s=S.sessions.find(x=>x.id===e.id);Object.assign(s,{date:e.date,time:e.time,notes:e.notes,status:e.status,segs:e.segs});if(changed)s.changedAt=Date.now();touch(s);}
+  stack.pop();S.view={name:"session",id:s.id};render();toast(restored?tt.trainingRestoredMsg:tt.saved);
+  if(!send)return;
+  const n=needs(s);            // the app decides: reminder / change / cancel
+  openMsg(n||"reminder",s.id);}
+
+document.getElementById("app").addEventListener("click",ev=>{
+  if(ev.target.classList&&ev.target.classList.contains("sheet-wrap")){closeSheet();return;} /* tap on the dim backdrop closes the sheet */
+  const el=ev.target.closest("[data-tab],[data-go],[data-open],[data-msg],[data-att],[data-ref],[data-add-ref],[data-restore],[data-edit],[data-cancel],[data-del],[data-marksent],[data-dellog],[data-step],[data-rmpart],[data-addpart],[data-save],[data-mark],[data-allpresent],[data-finish],[data-editref],[data-rmref],[data-kind],[data-lang],[data-openwa],[data-copymsg],[data-sync],[data-brk],[data-msglang],[data-uilang],[data-toast],[data-act]");
+  if(!el)return;const d=el.dataset,tt=t();
+  if(d.act!==undefined){const a=d.act;const s=S.sheet;S.sheet=null;if(a!=="close"&&s&&s.actions&&s.actions[a])s.actions[a]();else render();return;}
+  if(d.tab){S.tab=d.tab;stack.length=0;S.view={name:d.tab};render();return;}
+  if(d.go==="back")return back();if(d.go==="new")return startEdit(null);if(d.go==="settings")return go({name:"settings"});
+  if(d.open)return go({name:"session",id:d.open});
+  if(d.msg)return openMsg(d.msg,d.sid||(nextSession()||{}).id);
+  if(d.att)return go({name:"att",id:d.att});
+  if(d.ref)return go({name:"ref",id:d.ref});
+  if(d.addRef!==undefined||d.editref){const r=d.editref?S.referees.find(x=>x.id===d.editref):null;
+    sheet(`<h3>${r?tt.edit:tt.addRef}</h3><div class="field"><label>${tt.name}</label><input class="input" id="f-name" value="${r?esc(r.name):""}"></div><div class="row-btns"><button class="btn ghost sm" data-act="close">${tt.cancel}</button><button class="btn primary sm" data-act="ok">${tt.saved.replace("تم الحفظ","حفظ").replace("Saved","Save")}</button></div>`,
+      {ok:()=>{const n=document.getElementById("f-name").value.trim();if(!n)return render();if(r){r.name=n;touch(r);}else S.referees.push(touch({id:id(),name:n}));render();toast(tt.saved);}});
+    setTimeout(()=>document.getElementById("f-name")?.focus(),50);return;}
+  if(d.restore){const x=S.sessions.find(y=>y.id===d.restore);x.status="upcoming";touch(x);render();toast(tt.restored);return;}
+  if(d.edit)return startEdit(S.sessions.find(x=>x.id===d.edit));
+  if(d.cancel){const s=S.sessions.find(x=>x.id===d.cancel);confirmSheet(tt.confirmCancel,tt.cancelT,()=>{s.status="cancelled";touch(s);render();if(needs(s)==="cancel")openMsg("cancel",s.id);else toast(tt.waNever);},{danger:true});return;}
+  if(d.del){confirmSheet(tt.confirmDel,tt.del,()=>{const x=S.sessions.find(y=>y.id===d.del);S.sessions=S.sessions.filter(y=>y.id!==d.del);S.tomb.push({t:"sessions",row:touch({...x,deletedAt:now()})});back();},{danger:true});return;}
+  if(d.marksent){sheet(`<h3>${tt.markSent}</h3>${[["reminder",tt.tReminder],["change",tt.tChange],["cancel",tt.tCancel]].map(([k,l])=>`<button class="btn tonal sm" data-act="${k}">${l}</button>`).join("")}`,
+    {reminder:()=>{S.log.push(touch({id:id(),sid:d.marksent,kind:"reminder",at:Date.now()}));render();},change:()=>{S.log.push(touch({id:id(),sid:d.marksent,kind:"change",at:Date.now()}));render();},cancel:()=>{S.log.push(touch({id:id(),sid:d.marksent,kind:"cancel",at:Date.now()}));render();}});return;}
+  if(d.dellog){confirmSheet(tt.removeWhich,tt.remove,()=>{const x=S.log.find(l=>l.id===d.dellog);S.log=S.log.filter(l=>l.id!==d.dellog);S.tomb.push({t:"messagelog",row:touch({...x,deletedAt:now()})});render();},{danger:true});return;}
+  if(d.step){const[i,n]=d.step.split("|");E.segs[+i][1]=Math.max(0,Math.min(300,E.segs[+i][1]+ +n));syncEdit();render();return;}
+  if(d.rmpart){E.segs.splice(+d.rmpart,1);syncEdit();render();return;}
+  if(d.addpart!==undefined){syncEdit();sheet(`<h3>${tt.addPart}</h3>${["refereeing","technique","kata","warmup","randori"].map(k=>`<button class="btn tonal sm" data-act="${k}">${SEGN[S.ui][k]}</button>`).join("")}<div class="field"><label>${tt.partName}</label><input class="input" id="f-part" placeholder="${tt.custom}"></div><button class="btn primary sm" data-act="custom">${tt.addPart}</button>`,
+    Object.assign({custom:()=>{const n=(document.getElementById("f-part").value||"").replace(/[:;]/g," ").trim();if(n)E.segs.push(["c:"+n,30]);render();}},Object.fromEntries(["refereeing","technique","kata","warmup","randori"].map(k=>[k,()=>{E.segs.push([k,30]);render();}]))));return;}
+  if(d.save)return saveEdit(d.save==="send");
+  if(d.mark){const[r,v]=d.mark.split("|");setAtt(S.view.id,r,v);render();return;}
+  if(d.allpresent!==undefined){S.referees.forEach(r=>setAtt(S.view.id,r.id,"present"));render();return;}
+  if(d.finish){const s=S.sessions.find(x=>x.id===d.finish);if(s.status!=="cancelled"){s.status="done";touch(s);}back();Sync.kick();return;}
+  if(d.rmref){const r=S.referees.find(x=>x.id===d.rmref);confirmSheet(tt.confirmRemove(r.name),tt.remove,()=>{S.referees=S.referees.filter(x=>x.id!==r.id);S.tomb.push({t:"referees",row:touch({...r,deletedAt:now()})});back();},{danger:true});return;}
+  if(d.kind||d.lang){const cur=document.getElementById("f-msg").value;const apply=()=>{if(d.kind)M.kind=d.kind;if(d.lang)M.lang=d.lang;M.text=buildMsg(M.kind,S.sessions.find(x=>x.id===M.sid),M.lang);M.gen=M.text;render();};
+    if(cur!==M.gen){M.text=cur;sheet(`<h3>${tt.replaceEdits}</h3><div class="row-btns"><button class="btn ghost sm" data-act="close">${tt.cancel}</button><button class="btn primary sm" data-act="ok">${tt.replace}</button></div>`,{ok:apply});}else apply();return;}
+  if(d.openwa!==undefined){M.text=document.getElementById("f-msg").value;
+    const askSent=()=>sheet(`<h3>${tt.didSend}</h3><div class="row-btns"><button class="btn ghost sm" data-act="close">${tt.notYet}</button><button class="btn primary sm" data-act="ok">${tt.yesSent}</button></div>`,{ok:()=>{S.log.push(touch({id:id(),sid:M.sid||null,kind:M.kind,at:Date.now()}));back();toast("✓ "+tt.yesSent);Sync.kick();}});
+    if(navigator.share&&/Android|iPhone|iPad/i.test(navigator.userAgent)){navigator.share({text:M.text}).then(askSent).catch(()=>{});}
+    else{window.open("https://wa.me/?text="+encodeURIComponent(M.text),"_blank");askSent();}
+    return;}
+  if(d.copymsg!==undefined){M.text=document.getElementById("f-msg").value;navigator.clipboard&&navigator.clipboard.writeText(M.text).then(()=>toast(tt.copied),()=>{});return;}
+  if(d.sync){const tt=t();
+    if(d.sync==="now"){toast(tt.syncing);Sync.kick((ok,m)=>toast(ok?tt.synced:m));return;}
+    if(d.sync==="share"){const text=tt.shareText(S.sync.name||"JudoRef",S.sync.code,Sync.WEB);if(navigator.share)navigator.share({text}).catch(()=>{});else window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank");return;}
+    if(d.sync==="leave"){confirmSheet(tt.leaveConfirm,tt.leave,()=>{Sync.leave();render();toast(tt.left);},{danger:true});return;}
+    if(d.sync==="export"){const o={app:"JudoRef",version:4,web:true,exportedAt:Date.now(),data:{referees:S.referees,sessions:S.sessions,attendance:S.attendance,log:S.log}};const a=document.createElement("a");a.href="data:application/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(o,null,2));a.download="judoref-backup-"+isoToday+".json";a.click();return;}
+    if(d.sync==="create"){sheet(`<h3>${tt.createClass}</h3><div class="field"><label>${tt.className}</label><input class="input" id="f-cls" value="JudoRef"></div><div class="row-btns"><button class="btn ghost sm" data-act="close">${tt.cancel}</button><button class="btn primary sm" data-act="ok">${tt.createClass}</button></div>`,
+      {ok:()=>{const n=document.getElementById("f-cls").value.trim()||"JudoRef";toast(tt.syncing);Sync.create(n).then(()=>{save();render();toast(tt.created);}).catch(e=>toast(Sync.friendly(e)));}});setTimeout(()=>document.getElementById("f-cls")?.focus(),50);return;}
+    if(d.sync==="join"){sheet(`<h3>${tt.joinClass}</h3><div class="tiny">${tt.joinWarn}</div><div class="field"><label>${tt.classCode}</label><input class="input" id="f-code" maxlength="6" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:.12em;font-weight:800"></div><div class="row-btns"><button class="btn ghost sm" data-act="close">${tt.cancel}</button><button class="btn primary sm" data-act="ok">${tt.joinClass}</button></div>`,
+      {ok:()=>{const c=document.getElementById("f-code").value.trim().toUpperCase();if(c.length!==6)return toast(tt.badCode);toast(tt.syncing);Sync.join(c).then(()=>{save();stack.length=0;S.view={name:"home"};render();toast(tt.joined);}).catch(e=>toast(Sync.friendly(e)));}});setTimeout(()=>document.getElementById("f-code")?.focus(),50);return;}
+  }
+  if(d.msglang){S.msgLang=d.msglang;render();return;}
+  if(d.uilang){S.ui=d.uilang;render();return;}
+  if(d.toast){toast(d.toast);return;}
+});
+document.getElementById("app").addEventListener("change",ev=>{const el=ev.target;if(el.id==="f-rem"){S.reminder=el.value;toast(t().saved);}if(el.id==="f-date"||el.id==="f-time"){syncEdit();render();}});
+function syncEdit(){if(!E)return;const d=document.getElementById("f-date"),tm=document.getElementById("f-time"),n=document.getElementById("f-notes");if(d)E.date=d.value||E.date;if(tm)E.time=tm.value||E.time;if(n)E.notes=n.value;}
+render();Sync.kick();
+</script>
+</body>
+</html>
