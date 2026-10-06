@@ -158,7 +158,6 @@ textarea.input{min-height:120px;resize:vertical;line-height:1.5}
 
 <div class="stage">
   <div class="phone"><div class="app" id="app"></div></div>
-  <div class="stage-note">JudoRef web · same class as the phone app · Settings → Online sync to enter your class code</div>
 </div>
 
 <script>
@@ -398,9 +397,6 @@ function msgView(){const tt=t();const m=M;const s=S.sessions.find(x=>x.id===m.si
    <div class="card">${kinds}${langs}<textarea class="input" id="f-msg" style="min-height:220px;font-size:14px">${esc(m.text)}</textarea></div>
    <div class="card"><div class="eyebrow">${tt.nextStep}</div><div class="steps">${tt.steps.map((x,i)=>`<div class="step"><i>${i+1}</i><span>${x}</span></div>`).join("")}</div></div></div>
    <div style="padding:10px 16px 14px;border-top:1px solid var(--line)"><button class="btn primary" data-openwa>${ICON.send}${tt.openWa}</button><button class="btn ghost sm" data-copymsg style="margin-top:8px">${tt.copyMsg}</button></div>`;}
-function waView(){const tt=t();const m=M;return `<div style="flex:1;display:flex;flex-direction:column;background:#0b141a;color:#e9edef;padding:16px;gap:12px;font-family:system-ui">
-   <div style="font-size:12px;opacity:.6">${tt.waSim}</div>${m.waStep===0?`<div style="font-weight:700">${tt.waPick}</div><button class="item" style="background:#1f2c34;border-radius:12px;color:#e9edef" data-wapick><div class="avatar" style="background:#005c4b;color:#fff">🥋</div><div class="body"><div class="t">${tt.waGroup}</div><div class="s" style="color:#8696a0">32 members</div></div></button>`
-   :`<div style="font-weight:700">${tt.waGroup}</div><div class="wa" style="flex:1;overflow:auto"><div class="bubble">${esc(m.text)}</div></div><div class="row-btns"><button class="btn ghost" style="background:#1f2c34;color:#e9edef" data-waback>${tt.waBack}</button><button class="btn" style="background:#00a884;color:#fff" data-wasend>${tt.waSend}</button></div>`}</div>`;}
 function settingsView(){const tt=t();
   const segs=(cur,opts,attr)=>`<div class="seg">${opts.map(([k,l])=>`<button class="${cur===k?"on":""}" data-${attr}="${k}">${l}</button>`).join("")}</div>`;
   const on=!!S.sync.code;const last=S.sync.last?new Date(S.sync.last).toLocaleString(loc(),{weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}):null;
