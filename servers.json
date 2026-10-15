@@ -1,6 +1,6 @@
 {
   "servers": [
-    { "name": "My NAS", "address": "https://buomarnas.duckdns.org" },
+    { "name": "My NAS", "address": "https://anisette.tailcc1e51.ts.net" },
     { "name": "Jkcoxson", "address": "https://ani.jkcoxson.com" },
     { "name": "StikStore (secondary)", "address": "https://ani2.stikstore.app" },
     { "name": "StikStore", "address": "https://ani.stikstore.app" }
